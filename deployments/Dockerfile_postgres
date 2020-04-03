@@ -1,0 +1,4 @@
+FROM postgres:latest
+RUN mkdir -p /var/lib/postgresql/data && \
+chgrp -R 999 /var/lib/postgresql/data && \
+    chmod -R g=u /var/lib/postgresql/data

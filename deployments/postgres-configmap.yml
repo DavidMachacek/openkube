@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: gs
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: goodsamaritandb
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: admin123

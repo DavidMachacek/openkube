@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+  namespace: gs
+  labels:
+    app: mysql
+data:
+  MYSQL_ROOT_PASSWORD: admin
+  MYSQL_DATABASE: gs
+  MYSQL_USER: admin
+  MYSQL_PASSWORD: admin

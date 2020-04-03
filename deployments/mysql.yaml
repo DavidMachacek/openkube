@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: gs
+spec:
+  replicas: 1
+  user: "1000:50"
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 50
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: davidmachacek/mysql:latest
+          imagePullPolicy: "IfNotPresent"
+          user: "1000:50"
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: mysql-config
+          volumeMounts:
+            - mountPath: /var/lib/mysql:z
+              name: mysql
+      volumes:
+        - name: mysql
+          persistentVolumeClaim:
+            claimName: mysql-pvc

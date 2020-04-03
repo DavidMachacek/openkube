@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: test
+  namespace: gs
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: test
+    spec:
+      containers:
+        - name: testcontainer
+          image: busybox:latest
+          command:
+            - /bin/bash
+          volumeMounts:
+            - name: postgredb  # or whatever
+              mountPath: /var/lib/postgres/data
+      volumes:
+        - name: postgredb
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim

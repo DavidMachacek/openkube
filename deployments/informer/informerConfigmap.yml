@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: informer-config
+  namespace: gs
+  labels:
+    app: informer-config
+data:
+  CLIENTS_URL: http://clients.gs.svc.cluster.local

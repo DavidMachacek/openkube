@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pv-claim
+  namespace: gs
+  labels:
+    billingType: "hourly"
+  region: us-south
+spec:
+  storageClassName: ibmc-block-bronze
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
