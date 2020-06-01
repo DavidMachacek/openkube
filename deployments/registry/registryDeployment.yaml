@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: registry
+  labels:
+    app: registry
+  namespace: docker-registry
+spec:
+  containers:
+  - name: registry
+    image: registry:2
+    imagePullPolicy: Always
+    ports:
+    - containerPort: 5000
+    volumeMounts:
+    - mountPath: /registry
+      name: registry-volume
+  volumes:
+  - name: registry-volume
+    hostPath:
+      # directory location on host
+      path: /mount-data/registry
+      # this field is optional
+      type: Directory

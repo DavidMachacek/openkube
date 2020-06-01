@@ -80,6 +80,14 @@
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- swagger -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>
@@ -126,6 +134,42 @@
 						<version>${kotlin.version}</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>com.github.kongchen</groupId>
+				<artifactId>swagger-maven-plugin</artifactId>
+				<version>3.1.7</version>
+				<configuration>
+					<apiSources>
+						<apiSource>
+							<info>
+								<title>Informer Services</title>
+								<version>1.0.0</version>
+								<contact>
+									<email>davido.machacek@gmail.com</email>
+									<name>David Machacek</name>
+								</contact>
+							</info>
+
+							<locations>
+								<location>cz.goodsamaritan.be.queries.rest.*</location>
+							</locations>
+							<springmvc>true</springmvc>
+							<schemes>http,https</schemes>
+							<host>david.azure.com</host>
+							<outputFormats>json</outputFormats>
+							<swaggerDirectory>${basedir}/target/classes/api</swaggerDirectory>
+						</apiSource>
+					</apiSources>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

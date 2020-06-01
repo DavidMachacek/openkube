@@ -11,7 +11,7 @@ class TestController {
     val logger: Logger = LoggerFactory.getLogger(QueryController::class.java)
 
     @GetMapping
-    fun getAll(): String {
+    fun getTest(): String {
         logger.info("request=[REST]/, action=testBegin")
         return "ahoj z informer:v1 from " + InetAddress.getLocalHost().hostName.also {
             logger.info("action=testEnd")

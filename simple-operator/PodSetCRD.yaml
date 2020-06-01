@@ -1,0 +1,6 @@
+apiVersion: david.k8s.io/v1alpha1
+kind: PodSet
+metadata:
+  name: example-podset
+  spec:
+    replicas: 5

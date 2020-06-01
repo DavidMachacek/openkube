@@ -2,12 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: informer
-  namespace: as
+  namespace: gs
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: informerappas
+      app: informerapp
   minReadySeconds: 10
   strategy:
     rollingUpdate:
@@ -17,11 +17,11 @@ spec:
   template:
     metadata:
       labels:
-        app: informerappas
+        app: informerapp
     spec:
       containers:
       - image: davidmachacek/informer:v1
-        name: informercontaineras
+        name: informercontainer
         readinessProbe:
           periodSeconds: 10
           httpGet:
