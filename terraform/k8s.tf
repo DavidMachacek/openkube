@@ -20,7 +20,9 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     location            = azurerm_resource_group.k8s.location
     resource_group_name = azurerm_resource_group.k8s.name
     dns_prefix          = var.dns_prefix
-
+    identity {
+        type = "SystemAssigned"
+    }
     linux_profile {
         admin_username = "ubuntu"
 
@@ -50,4 +52,14 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     tags = {
         Owner = var.owner
     }
+
+  role_based_access_control {
+    azure_active_directory {
+          client_app_id = "a9b1676f-adf4-4657-a406-89af12e72e66"
+          server_app_id = "4e3e52f0-aca1-4e36-a9a9-a0a43194e668"
+          server_app_secret = "r@8W]U38/v2pWX@1p,#TU0ds0<A+R_3."
+          tenant_id = "706d7bcf-0631-463c-93e3-3a81f2701686"
+        }
+    enabled = true
+        }
 }

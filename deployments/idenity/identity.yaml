@@ -1,0 +1,16 @@
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentity
+metadata:
+  name: aks-pod-to-sa
+spec:
+  type: 0
+  resourceID: /subscriptions/5d25e043-0a56-4710-9c8e-c7bced4ec3d9/resourcegroups/myrg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/aks-pod-to-sa
+  clientID: 74d2d911-b3a6-439c-b2c8-5da9fb984aec
+---
+apiVersion: "aadpodidentity.k8s.io/v1"
+kind: AzureIdentityBinding
+metadata:
+  name: aks-pod-to-sa-binding
+spec:
+  azureIdentity: aks-pod-to-sa
+  selector: aks-pod-to-sa

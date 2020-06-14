@@ -1,3 +1,26 @@
+# Create the Azure AD application
+az ad app create --display-name "$AksServer" --identifier-uris "https://MyCLusterServer" --query appId -o tsv
+4e3e52f0-aca1-4e36-a9a9-a0a43194e668
+# Update the application group membership claims
+az ad app update --id 4e3e52f0-aca1-4e36-a9a9-a0a43194e668 --set groupMembershipClaims=All
+# Create a service principal for the Azure AD application
+az ad sp create --id 4e3e52f0-aca1-4e36-a9a9-a0a43194e668
+# Get the service principal secret
+az ad sp credential reset --name 4e3e52f0-aca1-4e36-a9a9-a0a43194e668 --credential-description "AKSPassword" --query password -o tsv
+\Qx5h/J8u&F%mi4Q7hv*Y[S99+)l[pZ/
+az ad app permission add --id 4e3e52f0-aca1-4e36-a9a9-a0a43194e668 --api 00000003-0000-0000-c000-000000000000 --api-permissions e1fe6dd8-ba31-4d61-89e7-88639da4683d=Scope 06da0dbc-49e2-44d2-8312-53f166ab848a=Scope 7ab1d382-f21e-4acd-a863-ba3e13f7da61=Role
+az ad app permission grant --id 4e3e52f0-aca1-4e36-a9a9-a0a43194e668 --api 00000003-0000-0000-c000-000000000000
+az ad app permission admin-consent --id 4e3e52f0-aca1-4e36-a9a9-a0a43194e668
+
+az ad app create --display-name "AksClient" --native-app --reply-urls "https://$MyClusterClient" --query appId -o tsv
+a9b1676f-adf4-4657-a406-89af12e72e66
+az ad sp create --id a9b1676f-adf4-4657-a406-89af12e72e66
+
+oAuthPermissionId=$(az ad app show --id 4e3e52f0-aca1-4e36-a9a9-a0a43194e668 --query "oauth2Permissions[0].id" -o tsv)
+13af29d6-800c-41a8-a982-c4ee3e90b889
+az ad app permission add --id a9b1676f-adf4-4657-a406-89af12e72e66 --api 4e3e52f0-aca1-4e36-a9a9-a0a43194e668 --api-permissions 13af29d6-800c-41a8-a982-c4ee3e90b889=Scope
+az ad app permission grant --id a9b1676f-adf4-4657-a406-89af12e72e66 --api 4e3e52f0-aca1-4e36-a9a9-a0a43194e668
+
 terraform import azurerm_resource_group.k8s /subscriptions/5d25e043-0a56-4710-9c8e-c7bced4ec3d9/resourceGroups/myrg
 
 terraform import azurerm_log_analytics_workspace.test /subscriptions/5d25e043-0a56-4710-9c8e-c7bced4ec3d9/resourcegroups/myrg/providers/microsoft.operationalinsights/workspaces/mylogsdavid

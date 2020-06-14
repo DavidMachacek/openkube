@@ -15,6 +15,7 @@ RUN mvn package
 #
 # Alpine Linux with OpenJDK JRE
 FROM openjdk:8-jre-alpine
+RUN apk update && apk add bash && apk add curl
 # copy JAR from previous stage into image
 COPY --from=builder /app/target/*.jar /app.jar
 # run application with this command line

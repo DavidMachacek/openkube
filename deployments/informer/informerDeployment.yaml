@@ -18,10 +18,22 @@ spec:
     metadata:
       labels:
         app: informerapp
+        aadpodidbinding: aks-pod-to-sa
     spec:
       containers:
-      - image: davidmachacek/informer:v1
+      - image: myregistrydavid.azurecr.io/informer:latest
         name: informercontainer
+        env:
+          - name: SECRET_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mysecret
+                key: username
+          - name: SECRET_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysecret
+                key: password
         readinessProbe:
           periodSeconds: 10
           httpGet:
