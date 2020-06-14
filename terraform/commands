@@ -1,0 +1,5 @@
+terraform import azurerm_resource_group.k8s /subscriptions/5d25e043-0a56-4710-9c8e-c7bced4ec3d9/resourceGroups/myrg
+
+terraform import azurerm_log_analytics_workspace.test /subscriptions/5d25e043-0a56-4710-9c8e-c7bced4ec3d9/resourcegroups/myrg/providers/microsoft.operationalinsights/workspaces/mylogsdavid
+
+terraform init -backend-config="storage_account_name=mysadavid" -backend-config="container_name=tfstate" -backend-config="access_key=8rUNkBrixdOaJiFXwHmfPLYT7Pg7puF+yHGPr6zG+OEYPmN9KcNbM1iyLwIRebqYO2de58DFIMDwJxkxwpIN/Q==" -backend-config="key=codelab.microsoft.tfstate"
