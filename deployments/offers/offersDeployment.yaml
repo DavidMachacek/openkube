@@ -18,7 +18,6 @@ spec:
     metadata:
       labels:
         app: offerapp
-        aadpodidbinding: aks-pod-to-sa
     spec:
       containers:
       - image: myregistrydavid.azurecr.io/offer:latest
