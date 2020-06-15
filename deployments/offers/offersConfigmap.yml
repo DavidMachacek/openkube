@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: offer-config
+  namespace: gs
+  labels:
+    app: offer-config
+data:
+  INFORMER_URL: http://informers.gs.svc.cluster.local

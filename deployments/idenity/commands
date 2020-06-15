@@ -1,0 +1,3 @@
+az role assignment create --role "Managed Identity Operator" --assignee 6938492a-f2b6-4149-b0c3-11978be99443 --scope /subscriptions/5d25e043-0a56-4710-9c8e-c7bced4ec3d9/resourceGroups/MC_myrg_my-cluster_westeurope
+az role assignment create --role "Virtual Machine Contributor" --assignee 6938492a-f2b6-4149-b0c3-11978be99443 --scope /subscriptions/5d25e043-0a56-4710-9c8e-c7bced4ec3d9/resourceGroups/MC_myrg_my-cluster_westeurope
+az role assignment create --role "Managed Identity Operator" --assignee 6938492a-f2b6-4149-b0c3-11978be99443 --scope /subscriptions/5d25e043-0a56-4710-9c8e-c7bced4ec3d9/resourceGroups/myrg/providers/microsoft.managedidentity/userassignedidentities/aks-pod-to-sa
