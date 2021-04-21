@@ -1,0 +1,297 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: informer
+  namespace: informer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: informerapp
+  minReadySeconds: 10
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: informerapp
+    spec:
+      containers:
+      - image: davidmachacek/informer:db
+        name: informercontainer
+        imagePullPolicy: "Always"
+        command: ["/bin/sh"]
+        args: ["-c", "java -javaagent:/opt/temp/javaagent.jar -jar /app.jar"]
+        envFrom:
+        - configMapRef:
+            name: appd-java-config
+        env:
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres
+              key: password
+        - name: APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: appd-agent-secret
+              key: access-key
+        - name: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT-SCHEMA
+          value: public
+        - name: SPRING_DATASOURCE_USERNAME
+          value: postgresadmin
+        - name: SPRING_DATASOURCE_URL  
+          value: jdbc:postgresql://postgres:5432/postgresdb
+        readinessProbe:
+          periodSeconds: 10
+          httpGet:
+            path: /actuator/health
+            port: 8080        
+        volumeMounts:
+        - mountPath: /opt/temp
+          name: appd-agent-repo    
+      initContainers:
+      - command:
+        - cp
+        - -r
+        - /opt/appdynamics/.
+        - /opt/temp
+        name: appd-agent
+        image: docker.io/appdynamics/java-agent:20.8.0
+        volumeMounts:
+        - mountPath: /opt/temp
+          name: appd-agent-repo
+      volumes:
+        - name: appd-agent-repo
+          emptyDir: {}            
+---
+apiVersion: v1
+data:
+  APPDYNAMICS_AGENT_APPLICATION_NAME: "informerApp"
+  APPDYNAMICS_AGENT_ACCOUNT_NAME: "sandgconsulting"
+  APPDYNAMICS_AGENT_TIER_NAME: "PersistentInformerTier"
+  APPDYNAMICS_AGENT_NODE_NAME: "OpenshiftClusterNode"
+  APPDYNAMICS_CONTROLLER_HOST_NAME: "sandgconsulting.saas.appdynamics.com"
+  APPDYNAMICS_CONTROLLER_PORT: "443"
+  APPDYNAMICS_CONTROLLER_SSL_ENABLED: "true"
+  APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME: "true"
+  APPDYNAMICS_JAVA_AGENT_REUSE_NODE_NAME_PREFIX: "ocp-node-"
+kind: ConfigMap
+metadata:
+  name: appd-java-config
+  namespace: informer
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: appd-agent-secret
+  namespace: informer
+type: Opaque
+data:
+  access-key: eTRpYnVqem03Mmdn  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: informers
+  namespace: informer
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  - name: https
+    port: 443
+    targetPort: 8443
+  selector:
+    app: informerapp 
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: informer
+  labels: &AppPostgresLabels
+    app: postgresapp
+    app.kubernetes.io/component: postgres
+spec:
+  replicas: 1
+  selector: 
+    matchLabels: *AppPostgresLabels
+  template:
+    metadata:
+      labels: *AppPostgresLabels
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:10.15
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          env:
+          - name: PGDATA
+            value: /var/lib/postgresql/data/pgdata
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: password
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgredb
+      volumes:
+        - name: postgredb
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: informer
+spec:
+  ports:
+  - name: http
+    port: 5432
+    targetPort: 5432
+  selector: 
+    app: postgresapp             
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: postgres
+spec:
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: postgresdb
+  POSTGRES_USER: postgresadmin  
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres
+  namespace: informer
+type: Opaque
+data:
+  password: aGVzbG8=
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: informer-traffic-generator-get-hostname
+  namespace: informer
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: callout
+            image: buildpack-deps:curl
+            args:
+            - /bin/sh
+            - -ec
+            - curl informers
+          restartPolicy: Never
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: informer-traffic-generator-get-clients
+  namespace: informer
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: callout
+            image: buildpack-deps:curl
+            args:
+            - /bin/sh
+            - -ec
+            - curl informers/db
+          restartPolicy: Never
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-agent
+  namespace: informer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-agent
+  template:
+    metadata:
+      labels:
+        app: db-agent
+    spec:
+      containers:
+      - image: davidmachacek/dbagent-psql:v1
+        name: db-agentcontainer
+        imagePullPolicy: "Always"  
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fe-informer
+  namespace: informer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fe-informer
+  template:
+    metadata:
+      labels:
+        app: fe-informer
+    spec:
+      containers:
+      - image: davidmachacek/fe-informer:v1
+        name: fe-informercontainer
+        imagePullPolicy: "Always"  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontends
+  namespace: informer
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  selector: 
+    app: fe-informer  

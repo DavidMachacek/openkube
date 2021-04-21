@@ -1,0 +1,6 @@
+.DS_Store
+./fe-informer/node_modules
+./fe-informer/package-lock.json
+./informer/target
+.DS_Store
+informer/.DS_Store
