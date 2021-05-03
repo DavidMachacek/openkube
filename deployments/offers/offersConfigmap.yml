@@ -6,4 +6,4 @@ metadata:
   labels:
     app: offer-config
 data:
-  INFORMER_URL: http://informers.gs.svc.cluster.local
+  url: http://informers.gs.svc.cluster.local

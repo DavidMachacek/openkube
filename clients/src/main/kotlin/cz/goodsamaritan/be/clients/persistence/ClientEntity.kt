@@ -11,7 +11,7 @@ data class ClientEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int?,
+    val id: Long?,
     val firstName: String,
     val lastName: String,
     @CreationTimestamp

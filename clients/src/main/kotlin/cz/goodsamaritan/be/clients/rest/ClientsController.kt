@@ -30,7 +30,7 @@ class ClientsController(
     }
 
     @PostMapping
-    fun create(client: ClientDTO) {
+    fun create(@RequestBody client: ClientDTO) {
         logger.info("request=[REST]/clients, action=saveNewClientBegin")
         clientsRepository.save(client.toEntity()).also {
             logger.info("action=saveNewClientEnd")

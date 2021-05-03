@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import React, { Component } from 'react';
 import Clients from './components/clients';
+import NewClient from './components/newClient';
 
 class App extends Component {
 
@@ -19,7 +20,10 @@ class App extends Component {
     }
     render() {
         return (
-            <Clients clients={this.state.clients} />
+            <div>
+                <Clients clients={this.state.clients} />
+                <NewClient />
+            </div>
         )
     }
 }

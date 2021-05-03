@@ -4,7 +4,7 @@ import cz.goodsamaritan.be.clients.persistence.ClientEntity
 import java.time.ZonedDateTime
 
 data class ClientDTO (
-        val id: Int? = null,
+        val id: Long? = null,
         val firstName: String,
         val lastName: String,
         val created: ZonedDateTime? = null
