@@ -4,17 +4,19 @@ import cz.goodsamaritan.be.clients.persistence.ClientEntity
 import java.time.ZonedDateTime
 
 data class ClientDTO (
-        val id: Int? = null,
+        val id: Long? = null,
         val firstName: String,
         val lastName: String,
-        val created: ZonedDateTime? = null
+        val created: ZonedDateTime? = null,
+        val password: String
 ) {
     fun toEntity(): ClientEntity {
         return ClientEntity(
                 id = id,
                 firstName = firstName,
                 lastName = lastName,
-                created = created
+                created = created,
+                password = password
         )
     }
 }
