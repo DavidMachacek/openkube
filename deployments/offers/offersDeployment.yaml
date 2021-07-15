@@ -27,7 +27,7 @@ spec:
             valueFrom:
               configMapKeyRef:
                 name: offer-config
-                INFORMER_URL: username
+                key: url
         readinessProbe:
           periodSeconds: 10
           httpGet:

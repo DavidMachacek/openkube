@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+ name: myingressresource
+spec:
+ tls:
+ - hosts:
+   - jablotron-14650cd5d7ec0d12de92bdc010dd3efa-0000.eu-de.containers.appdomain.cloud
+   secretName: jablotron-14650cd5d7ec0d12de92bdc010dd3efa-0000
+ rules:
+ - host: jablotron-14650cd5d7ec0d12de92bdc010dd3efa-0000.eu-de.containers.appdomain.cloud
+   http:
+     paths:
+     - path: /informer
+       backend:
+         serviceName: informers
+         servicePort: 80
