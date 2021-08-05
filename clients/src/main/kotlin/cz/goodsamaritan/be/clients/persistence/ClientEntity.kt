@@ -15,6 +15,8 @@ data class ClientEntity(
     val firstName: String,
     val lastName: String,
     val password: String,
+    @Column(unique=true)
+    val username: String,
     @CreationTimestamp
     val created: ZonedDateTime?
 ) {
@@ -25,7 +27,8 @@ data class ClientEntity(
                 firstName = firstName,
                 lastName = lastName,
                 password = password,
-                created = created
+                created = created,
+                username = username
         )
     }
 }

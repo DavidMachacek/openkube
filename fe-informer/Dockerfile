@@ -13,13 +13,6 @@ RUN npm run build
 FROM nginx:stable-alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
-#RUN   echo $'\n\
-# location / {\n\
-#     sub_filter      \'<head>\'\n\
-#         \'<head><script>window[\"adrum-app-key\"]=\"EC-AAB-PXY\";window[\"adrum-start-time\"]=new Date().getTime();</script><script type=\"text/javascript\" src=\"//cdn.appdynamics.com/adrum/adrum-latest.js\"></script>\';\n\
-#     sub_filter_once on;\n\
-# }\n\
-#' >> /etc/nginx/conf.d/location.conf
 COPY default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

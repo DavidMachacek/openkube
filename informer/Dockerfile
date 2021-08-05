@@ -17,6 +17,13 @@ RUN mvn package
 FROM openjdk:8-jre-alpine
 RUN apk update && apk add bash && apk add curl
 # copy JAR from previous stage into image
-COPY --from=builder /app/target/*.jar /app.jar
+#COPY --from=builder /app/target/*.jar /app.jar
 # run application with this command line
-CMD ["/usr/bin/java", "-jar", "-Dspring.profiles.active=default", "/app.jar"]
+#CMD ["/usr/bin/java", "-jar", "-Dspring.profiles.active=default", "/app.jar"]
+
+#FROM websphere-liberty:kernel
+
+COPY --chown=1001:0 --from=builder /app/target/*.jar /config/dropins/spring/app.jar
+COPY --chown=1001:0 server.xml /config/
+
+RUN configure.sh

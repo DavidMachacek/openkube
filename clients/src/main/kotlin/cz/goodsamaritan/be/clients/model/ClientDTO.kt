@@ -8,7 +8,8 @@ data class ClientDTO (
         val firstName: String,
         val lastName: String,
         val created: ZonedDateTime? = null,
-        val password: String
+        val password: String,
+        val username: String
 ) {
     fun toEntity(): ClientEntity {
         return ClientEntity(
@@ -16,7 +17,13 @@ data class ClientDTO (
                 firstName = firstName,
                 lastName = lastName,
                 created = created,
-                password = password
+                password = password,
+                username = username
         )
     }
 }
+
+data class ClientLoginDTO(
+        val username: String,
+        val password: String
+)

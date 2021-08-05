@@ -2,11 +2,14 @@ package cz.goodsamaritan.be.clients.rest
 
 import cz.goodsamaritan.be.clients.model.AddressDTO
 import cz.goodsamaritan.be.clients.model.ClientDTO
+import cz.goodsamaritan.be.clients.model.ClientLoginDTO
 import cz.goodsamaritan.be.clients.persistence.AddressRepository
 import cz.goodsamaritan.be.clients.persistence.ClientsRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.HttpClientErrorException
 
 @RestController
 @RequestMapping("/clients")
@@ -37,6 +40,16 @@ class ClientsController(
         logger.info("request=[REST]/clients, action=saveNewClientBegin")
         return clientsRepository.save(client.toEntity()).toDto().also {
             logger.info("action=saveNewClientEnd")
+        }
+    }
+
+    @PostMapping("/login")
+    fun login(@RequestBody client: ClientLoginDTO): ClientDTO {
+        logger.info("request=[REST]/clients/login, action=loginBegin")
+        return clientsRepository.findDistinctByUsername(client.username).toDto()
+                .takeIf { it.password == client.password } ?: throw HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Sorry, bad password mate!")
+                .also {
+            logger.info("action=loginEnd")
         }
     }
 
